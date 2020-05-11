@@ -1,7 +1,7 @@
 # Aww 
 
 <p align="center">
-    <img src="logo.png">
+    <img width="460" height="300" src="logo.png">
 </p>
 
 ## Description:
