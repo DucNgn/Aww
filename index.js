@@ -31,12 +31,27 @@ client.on('message', async message => {
 		callDog(message);
 		return;
 	}
+
+	// Default response: Output commands
+	if(message.content.startsWith(`${prefix}`)) {
+		displayCommand(message);
+		return;
+	}
 });
+
+async function displayCommand(message) {
+	let output = '\:house_with_garden: \n';
+	output += '`!meow fact` to learn some facts about meow \:kissing_cat: \n';
+	output += '`!meow img` to see a cute picture of meow \:cat2: \n\n';
+	output += '`!woof fact` to display fact about woof \:dog: \n';
+	output += '`!woof img` to check out a cute picture of woof woof \:dog2: \n';
+	return message.channel.send(output);
+}
 
 const cat = require('https');
 async function callCat(message) { 
 	const catFact = 'https://cat-fact.herokuapp.com/facts/random';
-	const catImg = 'https://api.thecatapi.com/v1/images/search';
+	const catImg = 'https://aws.random.cat/meow';
 
 	const args = message.content.split(' ');
 	const request = args[1];
@@ -49,9 +64,10 @@ async function callCat(message) {
 			});
 
 			resp.on('end', () => {
-				const output = JSON.parse(data);
+				const obj = JSON.parse(data);
+				const output = obj.text;
 				//console.log('Retrieved fact:\n' + output.text);
-				return message.channel.send(output.text);
+				return message.channel.send(output);
 			});
 		}).on('error', (err) => {
 			console.log("error: \n" + err.message);
@@ -65,51 +81,66 @@ async function callCat(message) {
 
 			resp.on('end', () => {
 				const obj = JSON.parse(data);
-				const imgLink = obj[0].url;
+				const imgLink = obj.file;
 				//console.log(imgLink);
-				return message.channel.send("Meowww", {files: [imgLink]});
+				return message.channel.send("Meowww \:smiley_cat: ", {files: [imgLink]});
 			});
 
 		}).on('Error', (err) => {
 			console.log("error: \n" + err.message);
 		});
 	} else {
-		return message.channel.send('Invalid input, grrrr');
+		return message.channel.send('Invalid input \:scream_cat:');
 	}
 	
 }
 
-const dog = require('http');
+const dog = require('https');
 async function callDog(message) { 
-	const dogFact = 'http://dog-api.kinduff.com/api/facts?number=1';
-	const catImg = 'https://api.thecatapi.com/v1/images/search';
+	const dogFact = 'https://some-random-api.ml/facts/dog';
+	const dogImg = 'https://random.dog/woof.json';
 
 	const args = message.content.split(' ');
 	const request = args[1];
 
 	if(request == 'fact') {
-		dog.get(dogFact, (resp) => {
+		dog.request(dogFact, (resp) => {
 			let data = '';
 			resp.on('data', (fact) => {
-				data+= fact;
+				data += fact;
 			});
 
 			resp.on('end', () => {
 				const obj = JSON.parse(data);
-				const output = obj.facts[0];
+				const output = obj.fact;
 				console.log('Retrieved fact:\n' + output);
 				return message.channel.send(output);
 			});
 		}).on('error', (err) => {
 			console.log("error: \n" + err.message);
 		});
+		
 	} else if (request == 'img') {
-		console.log('smth');
+		dog.get(dogImg, (resp) => {
+			let data = '';
+			resp.on('data', (info) => {
+				data += info;
+			});
+
+			resp.on('end', () => {
+				const obj = JSON.parse(data);
+				const imgLink = obj.url;
+				//console.log(imgLink);
+				return message.channel.send("Woof wooff \:dog:", {files: [imgLink]});
+			});
+		}).on('Error', (err) => {
+			console.log("error: \n" + err.message);
+		});
+
 	} else {
-		return message.channel.send('Invalid input, grrrr');
+		return message.channel.send('Invalid input \:hotdog:');
 	}
 	
 }
-
 
 client.login(token);
