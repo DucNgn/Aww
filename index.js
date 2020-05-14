@@ -48,8 +48,8 @@ async function displayCommand(message) {
 	return message.channel.send(output);
 }
 
-const cat = require('https');
 async function callCat(message) { 
+	const cat = require('https');
 	const catFact = 'https://cat-fact.herokuapp.com/facts/random';
 	const catImg = 'https://aws.random.cat/meow';
 
@@ -95,16 +95,16 @@ async function callCat(message) {
 	
 }
 
-const dog = require('https');
 async function callDog(message) { 
-	const dogFact = 'https://some-random-api.ml/facts/dog';
+	const dog = require('https');
+	const dogFact = 'https://dog-facts-api.herokuapp.com/api/v1/resources/dogs?number=1';
 	const dogImg = 'https://random.dog/woof.json';
 
 	const args = message.content.split(' ');
 	const request = args[1];
 
 	if(request == 'fact') {
-		dog.request(dogFact, (resp) => {
+		dog.get(dogFact, (resp) => {
 			let data = '';
 			resp.on('data', (fact) => {
 				data += fact;
@@ -112,8 +112,8 @@ async function callDog(message) {
 
 			resp.on('end', () => {
 				const obj = JSON.parse(data);
-				const output = obj.fact;
-				console.log('Retrieved fact:\n' + output);
+				output = obj[0].fact;
+				//console.log('Retrieved fact:\n' + output);
 				return message.channel.send(output);
 			});
 		}).on('error', (err) => {
